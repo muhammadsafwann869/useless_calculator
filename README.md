@@ -2,26 +2,26 @@
 
 
 
-# [Project Name] 🎯
+# Project name:[Useless Calculator] 🎯
 
 
 ## Basic Details
-### Team Name: [Name]
+### Team Name: [Clueless]
 
 
 ### Team Members
-- Team Lead: [Name] - [College]
-- Member 2: [Name] - [College]
-- Member 3: [Name] - [College]
+- Team Lead: [Muhammad Safwan] - [Adi shankara Institute of engineering]
+- Member 2: [Ashwin V Parbhu] - [Adi shankara Institute of engineering]
 
 ### Project Description
-[2-3 lines about what your project does]
+a calculator that makes simple math hilariously complicated.  From CAPTCHA challenges and disappearing numbers to explosions, Rickrolls, and surprise sounds, this project proves that sometimes the best calculator is the one that absolutely refuses to behave.
 
-### The Problem (that doesn't exist)
-[What ridiculous problem are you solving?]
+### The Problem 
+Why should a calculator make math easy when it can make it unnecessarily complicated and hilarious? 
 
-### The Solution (that nobody asked for)
-[How are you solving it? Keep it fun!]
+### The Solution 
+a calculator that turns basic math into complete chaos.  Users face CAPTCHA challenges, three-click numbers, random memory failures, unnecessary questions, shrinking screens, explosions, flying numbers, surprise sounds, Rickrolls, and a dramatic EXIT screen.
+
 
 ## Technical Details
 ### Technologies/Components Used
