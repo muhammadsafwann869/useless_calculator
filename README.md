@@ -2,16 +2,16 @@
 
 
 
-# Project name:[Useless Calculator] 🎯
+# Project name:Useless Calculator 🎯
 
 
 ## Basic Details
-### Team Name: [Clueless]
+### Team Name:Clueless
 
 
 ### Team Members
-- Team Lead: [Muhammad Safwan] - [Adi shankara Institute of engineering]
-- Member 2: [Ashwin V Parbhu] - [Adi shankara Institute of engineering]
+- Team Lead:Muhammad Safwan - Adi shankara Institute of engineering
+- Member 2: Ashwin V Prabhu - Adi shankara Institute of engineering
 
 ### Project Description
 a calculator that makes simple math hilariously complicated.  From CAPTCHA challenges and disappearing numbers to explosions, Rickrolls, and surprise sounds, this project proves that sometimes the best calculator is the one that absolutely refuses to behave.
@@ -26,73 +26,91 @@ a calculator that turns basic math into complete chaos.  Users face CAPTCHA chal
 ## Technical Details
 ### Technologies/Components Used
 For Software:
-- [Languages used]
-- [Frameworks used]
-- [Libraries used]
-- [Tools used]
-
-For Hardware:
-- [List main components]
-- [List specifications]
-- [List tools required]
+Languages used: HTML, CSS, JavaScript
+Frameworks used: None
+Libraries used: None
+Tools used: Visual Studio Code, Web Browser, HTML/CSS/JavaScript development tools
 
 ### Implementation
 For Software:
 # Installation
-[commands]
+No special installation or external packages are required.
 
 # Run
-[commands]
+Double-click index.html or open it in Chrome, Edge, or another modern browser.
 
 ### Project Documentation
 For Software:
 
 # Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
+Screenshot1:
+<img width="534" height="464" alt="image" src="https://github.com/user-attachments/assets/50a27fa1-01d2-4a43-9307-7d8c592ca55f" />
+~Image of Captcha
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+Screenshot2
+<img width="944" height="968" alt="image" src="https://github.com/user-attachments/assets/d4dae36a-20e8-4c27-b3d9-baf9b5887463" />
+~Main Interface of the Program
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
-
+Screenshot3
+<img width="613" height="416" alt="image" src="https://github.com/user-attachments/assets/aa32b554-2272-4f6d-8958-5c964dcc7458" />
+<img width="595" height="880" alt="image" src="https://github.com/user-attachments/assets/078936c2-7521-4322-88fa-046c10e44dcc" />
+~Outputs of the Program
 # Diagrams
-![Workflow](Add your workflow/architecture diagram here)
-*Add caption explaining your workflow*
 
-For Hardware:
+Workflow
+For Software:
+START
+  ↓
+CAPTCHA
+  ↓
+Correct? ── No ──→ Laughing Cat + Retry
+  │
+ Yes
+  ↓
+CALCULATOR
+  ↓
+Enter Numbers
+  ↓
+Choose Operation
+  ↓
+Calculate
+  ↓
+Unnecessary Question
+  ↓
+Show Correct Answer
+  ↓
+Random Events
+ ├── Calculator Shrinks
+ ├── Rickroll
+ ├── AC Explosion
+ └── EXIT Screen
 
-# Schematic & Circuit
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
+AC Button
+   ↓
+Count Clicks
+   ↓
+5 Clicks?
+ ├── No → Clear Calculator
+ └── Yes
+      ↓
+   EXPLOSION 💥
+      ↓
+ Flying Numbers + Sound
+      ↓
+Restore Calculator
+      ↓
+ 5–10 Clicks
+      ↓
+ Calculator Restored
 
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-# Build Photos
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
 
 ### Project Demo
 # Video
-[Add your demo video link here]
-*Explain what the video demonstrates*
-
 # Additional Demos
-[Add any extra demo materials/links]
 
-## Team Contributions
-- [Name 1]: [Specific contributions]
-- [Name 2]: [Specific contributions]
-- [Name 3]: [Specific contributions]
-
+## Team Contributions:
+* **Muhammad safwan:** Developed the calculator logic, CAPTCHA system, mathematical operations
+* **Ashwin V Prabhu:** Designed the interface for animations, added sound effects and multimedia features, and handled testing and debugging.
 ---
 Made with ❤️ at TinkerHub Useless Projects 
 
