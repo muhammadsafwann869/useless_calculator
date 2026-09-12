@@ -1,1 +1,2865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Useless Calculator</title>
 
+<style>
+:root{
+  --blue-dark:#031126;
+  --blue:#087cff;
+  --blue-light:#5bb7ff;
+  --blue-bright:#a8ddff;
+  --white:#fff;
+  --green:#25c984;
+  --red:#df4653;
+  --yellow:#ffc94d;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  color:white;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(0,145,255,.22),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(30,100,255,.20),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #020814,
+      #041a39 50%,
+      #020814
+    );
+}
+
+/* =========================================================
+   BACKGROUND EMOJIS
+========================================================= */
+
+.emoji-background{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:0;
+}
+
+.emoji{
+  position:absolute;
+  font-size:42px;
+  opacity:.44;
+  animation:floatEmoji linear infinite;
+  filter:drop-shadow(
+    0 0 8px rgba(255,255,255,.25)
+  );
+}
+
+.e1{left:3%;top:5%;animation-duration:10s;}
+.e2{left:14%;top:70%;animation-duration:13s;}
+.e3{left:27%;top:15%;animation-duration:12s;}
+.e4{left:39%;top:80%;animation-duration:11s;}
+.e5{left:52%;top:10%;animation-duration:15s;}
+.e6{left:64%;top:65%;animation-duration:9s;}
+.e7{left:77%;top:22%;animation-duration:14s;}
+.e8{left:89%;top:75%;animation-duration:12s;}
+.e9{left:8%;top:40%;animation-duration:16s;}
+.e10{left:20%;top:88%;animation-duration:10s;}
+.e11{left:34%;top:47%;animation-duration:13s;}
+.e12{left:47%;top:32%;animation-duration:11s;}
+.e13{left:60%;top:90%;animation-duration:14s;}
+.e14{left:73%;top:48%;animation-duration:12s;}
+.e15{left:84%;top:8%;animation-duration:15s;}
+.e16{left:94%;top:38%;animation-duration:10s;}
+
+@keyframes floatEmoji{
+  0%{
+    transform:translate(0,0) rotate(0deg);
+  }
+
+  25%{
+    transform:translate(35px,-55px) rotate(15deg);
+  }
+
+  50%{
+    transform:translate(-25px,35px) rotate(-12deg);
+  }
+
+  75%{
+    transform:translate(50px,20px) rotate(18deg);
+  }
+
+  100%{
+    transform:translate(0,0) rotate(0deg);
+  }
+}
+
+/* =========================================================
+   CALCULATOR
+========================================================= */
+
+#calculator{
+  width:470px;
+  max-width:96vw;
+  padding:20px;
+  border-radius:28px;
+  position:relative;
+  z-index:5;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8,124,255,.95),
+      rgba(2,40,95,.98)
+    );
+
+  border:2px solid rgba(168,221,255,.5);
+
+  box-shadow:
+    0 0 25px rgba(91,183,255,.55),
+    0 0 70px rgba(8,124,255,.35),
+    inset 0 0 25px rgba(255,255,255,.08);
+
+  transform:scale(1);
+  transform-origin:center;
+
+  transition:
+    transform .45s ease,
+    opacity .5s ease,
+    filter .5s ease;
+}
+
+#calculator.locked{
+  pointer-events:none;
+  filter:brightness(.45);
+}
+
+#calculator.exploded{
+  opacity:0;
+  transform:scale(.12) rotate(30deg);
+  filter:blur(12px);
+  pointer-events:none;
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.title{
+  text-align:center;
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:2px;
+  margin-bottom:4px;
+  text-shadow:
+    0 0 12px rgba(168,221,255,.8);
+}
+
+.subtitle{
+  text-align:center;
+  font-size:11px;
+  opacity:.75;
+  margin-bottom:12px;
+  letter-spacing:1px;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-bottom:10px;
+}
+
+.status div{
+  background:rgba(0,20,50,.45);
+  border:1px solid rgba(168,221,255,.25);
+  padding:7px 4px;
+  border-radius:9px;
+  text-align:center;
+  font-size:9px;
+  font-weight:bold;
+}
+
+/* =========================================================
+   DISPLAY
+========================================================= */
+
+.display{
+  background:#020a18;
+  border:2px solid rgba(168,221,255,.4);
+  border-radius:15px;
+  min-height:110px;
+  margin-bottom:14px;
+  padding:14px;
+
+  box-shadow:
+    inset 0 0 20px rgba(0,0,0,.7),
+    0 0 12px rgba(91,183,255,.2);
+}
+
+#equation{
+  min-height:28px;
+  font-size:18px;
+  opacity:.72;
+  word-break:break-all;
+}
+
+#answer{
+  min-height:45px;
+  font-size:34px;
+  font-weight:900;
+  color:var(--blue-bright);
+
+  text-shadow:
+    0 0 12px rgba(168,221,255,.9);
+
+  word-break:break-all;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.keypad{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+}
+
+button{
+  border:none;
+  color:white;
+  cursor:pointer;
+  font-weight:900;
+  border-radius:13px;
+  user-select:none;
+
+  transition:
+    transform .12s ease,
+    filter .12s ease,
+    box-shadow .12s ease;
+}
+
+button:hover{
+  filter:brightness(1.18);
+}
+
+button:active{
+  transform:scale(.93);
+}
+
+.key{
+  min-height:58px;
+  font-size:20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #116ed4,
+      #063c83
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.17),
+    0 5px 12px rgba(0,0,0,.28);
+
+  border:
+    1px solid rgba(168,221,255,.25);
+}
+
+.operator{
+  background:
+    linear-gradient(
+      145deg,
+      #1596ff,
+      #0752a0
+    );
+}
+
+.equal{
+  background:
+    linear-gradient(
+      145deg,
+      #26d991,
+      #078c61
+    );
+}
+
+.ac{
+  background:
+    linear-gradient(
+      145deg,
+      #ff5362,
+      #aa1727
+    );
+}
+
+.mem{
+  background:
+    linear-gradient(
+      145deg,
+      #766eff,
+      #3b2dc0
+    );
+}
+
+.exit-key{
+  background:
+    linear-gradient(
+      145deg,
+      #ffb83d,
+      #c76a00
+    );
+}
+
+.zero{
+  grid-column:span 2;
+}
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+.resize-area{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+.resize-area button{
+  flex:1;
+  min-height:43px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #217bc9,
+      #0a3d79
+    );
+
+  font-size:12px;
+}
+
+#restoreButton{
+  display:none;
+
+  background:
+    linear-gradient(
+      145deg,
+      #25c984,
+      #07764f
+    );
+}
+
+/* =========================================================
+   CALCULATE BUTTON
+========================================================= */
+
+#calculateButton{
+  width:100%;
+  min-height:73px;
+  margin-top:12px;
+
+  font-size:25px;
+  letter-spacing:2px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #fff,
+      #a8ddff
+    );
+
+  color:#032047;
+
+  box-shadow:
+    0 0 20px rgba(168,221,255,.9),
+    0 0 45px rgba(91,183,255,.4);
+}
+
+/* =========================================================
+   ROAST
+========================================================= */
+
+#roast{
+  margin-top:12px;
+  min-height:44px;
+  border-radius:10px;
+
+  background:rgba(0,0,0,.32);
+
+  border:
+    1px solid rgba(255,255,255,.13);
+
+  padding:10px;
+
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+}
+
+#resizeCounter{
+  text-align:center;
+  font-size:11px;
+  opacity:.75;
+  margin-top:5px;
+}
+
+/* =========================================================
+   OVERLAYS
+========================================================= */
+
+.overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+    rgba(0,7,20,.88);
+
+  backdrop-filter:blur(8px);
+}
+
+/* =========================================================
+   CAPTCHA
+========================================================= */
+
+.captcha-box{
+  width:420px;
+  max-width:90vw;
+  padding:28px;
+  border-radius:22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0a4fa0,
+      #031b40
+    );
+
+  border:
+    2px solid rgba(168,221,255,.5);
+
+  box-shadow:
+    0 0 45px rgba(8,124,255,.55);
+
+  text-align:center;
+}
+
+.captcha-box h2{
+  margin-top:0;
+}
+
+.captcha-stage{
+  color:var(--yellow);
+  font-weight:900;
+  font-size:13px;
+  letter-spacing:1px;
+  margin-bottom:15px;
+}
+
+.captcha-question{
+  background:#010811;
+  border-radius:12px;
+  padding:17px;
+  font-size:24px;
+  font-weight:900;
+  margin-bottom:15px;
+}
+
+.captcha-box input,
+.question-box input{
+  width:100%;
+  padding:13px;
+  border-radius:10px;
+  border:none;
+  outline:none;
+  font-size:19px;
+  margin-bottom:10px;
+  text-align:center;
+}
+
+.captcha-box button,
+.question-box button,
+.failure-box button,
+.restore-box button{
+  width:100%;
+  min-height:48px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #1596ff,
+      #0752a0
+    );
+
+  font-size:16px;
+}
+
+/* =========================================================
+   FAILURE
+========================================================= */
+
+.failure-box{
+  width:430px;
+  max-width:90vw;
+  padding:24px;
+
+  text-align:center;
+
+  border-radius:22px;
+
+  background:#08152a;
+
+  border:
+    2px solid rgba(255,72,95,.45);
+
+  box-shadow:
+    0 0 40px rgba(255,50,70,.25);
+}
+
+.failure-box img{
+  width:100%;
+  max-height:300px;
+  object-fit:contain;
+  border-radius:15px;
+  margin-bottom:15px;
+}
+
+/* =========================================================
+   QUESTION
+========================================================= */
+
+.question-box{
+  width:470px;
+  max-width:92vw;
+  padding:28px;
+  border-radius:22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #093f7c,
+      #03152f
+    );
+
+  border:
+    2px solid rgba(168,221,255,.5);
+
+  box-shadow:
+    0 0 45px rgba(8,124,255,.5);
+}
+
+.question-box h2{
+  margin-top:0;
+  text-align:center;
+}
+
+/* =========================================================
+   RICKROLL
+========================================================= */
+
+#rickrollScreen{
+  position:fixed;
+  inset:0;
+  z-index:600;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  background:#000;
+}
+
+#rickrollGif{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/* =========================================================
+   EXIT SCREEN
+========================================================= */
+
+#exitScreen{
+  position:fixed;
+  inset:0;
+  z-index:700;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  background:#000;
+}
+
+#exitImage{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.exit-hint{
+  position:absolute;
+  bottom:18px;
+  left:50%;
+  transform:translateX(-50%);
+
+  padding:8px 14px;
+  border-radius:10px;
+
+  background:rgba(0,0,0,.65);
+
+  color:white;
+
+  font-size:12px;
+  font-weight:bold;
+
+  opacity:.8;
+}
+
+/* =========================================================
+   FLASHES
+========================================================= */
+
+#flash{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  display:none;
+  background:white;
+}
+
+#explosionFlash{
+  position:fixed;
+  inset:0;
+  z-index:430;
+
+  pointer-events:none;
+
+  opacity:0;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,255,255,1),
+      rgba(255,180,60,.9),
+      rgba(255,50,30,.4),
+      transparent 70%
+    );
+}
+
+#explosionFlash.active{
+  animation:boomFlash .7s ease forwards;
+}
+
+@keyframes boomFlash{
+  0%{
+    opacity:0;
+  }
+
+  15%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:0;
+  }
+}
+
+/* =========================================================
+   EXPLOSION PARTICLES
+========================================================= */
+
+.explosion-number{
+  position:fixed;
+  z-index:450;
+
+  pointer-events:none;
+
+  font-size:25px;
+  font-weight:900;
+
+  color:white;
+
+  text-shadow:
+    0 0 8px #5bb7ff,
+    0 0 16px #087cff;
+
+  animation:
+    flyNumber
+    1.25s
+    cubic-bezier(.1,.8,.2,1)
+    forwards;
+}
+
+@keyframes flyNumber{
+
+  0%{
+    transform:
+      translate(0,0)
+      rotate(0deg)
+      scale(1);
+
+    opacity:1;
+  }
+
+  100%{
+    transform:
+      translate(var(--x),var(--y))
+      rotate(var(--r))
+      scale(.3);
+
+    opacity:0;
+  }
+}
+
+.explosion-piece{
+  position:fixed;
+  z-index:440;
+
+  pointer-events:none;
+
+  animation:
+    pieceFly
+    1.15s
+    cubic-bezier(.1,.8,.2,1)
+    forwards;
+}
+
+@keyframes pieceFly{
+
+  0%{
+    opacity:1;
+
+    transform:
+      translate(0,0)
+      rotate(0deg)
+      scale(1);
+  }
+
+  100%{
+    opacity:0;
+
+    transform:
+      translate(var(--x),var(--y))
+      rotate(var(--r))
+      scale(.15);
+  }
+}
+
+/* =========================================================
+   RESTORE AFTER EXPLOSION
+========================================================= */
+
+.restore-overlay{
+  position:fixed;
+  inset:0;
+  z-index:300;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  background:
+    rgba(0,5,14,.78);
+
+  backdrop-filter:blur(7px);
+}
+
+.restore-box{
+  width:430px;
+  max-width:90vw;
+  padding:30px;
+
+  text-align:center;
+
+  border-radius:22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0b407e,
+      #03152f
+    );
+
+  border:
+    2px solid rgba(91,183,255,.55);
+
+  box-shadow:
+    0 0 45px rgba(8,124,255,.5);
+}
+
+.restore-box h2{
+  margin:0 0 10px;
+  font-size:28px;
+}
+
+.restore-box p{
+  opacity:.8;
+  font-size:13px;
+  line-height:1.5;
+}
+
+#restoreCalculatorButton{
+  margin-top:12px;
+
+  min-height:62px;
+
+  font-size:20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #25c984,
+      #07764f
+    );
+}
+
+#restoreClickCounter{
+  margin-top:10px;
+
+  font-size:13px;
+
+  color:
+    var(--blue-bright);
+
+  font-weight:bold;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:520px){
+
+  #calculator{
+    padding:14px;
+    border-radius:20px;
+  }
+
+  .key{
+    min-height:53px;
+  }
+
+  .title{
+    font-size:22px;
+  }
+
+  #answer{
+    font-size:28px;
+  }
+
+  .emoji{
+    font-size:32px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =======================================================
+     BACKGROUND EMOJIS
+======================================================= -->
+
+<div class="emoji-background">
+
+  <div class="emoji e1">😂</div>
+  <div class="emoji e2">🤣</div>
+  <div class="emoji e3">😂</div>
+  <div class="emoji e4">🤣</div>
+  <div class="emoji e5">😂</div>
+  <div class="emoji e6">🤣</div>
+  <div class="emoji e7">😂</div>
+  <div class="emoji e8">🤣</div>
+  <div class="emoji e9">😂</div>
+  <div class="emoji e10">🤣</div>
+  <div class="emoji e11">😂</div>
+  <div class="emoji e12">🤣</div>
+  <div class="emoji e13">😂</div>
+  <div class="emoji e14">🤣</div>
+  <div class="emoji e15">😂</div>
+  <div class="emoji e16">🤣</div>
+
+</div>
+
+<!-- =======================================================
+     CALCULATOR
+======================================================= -->
+
+<div id="calculator" class="locked">
+
+  <div class="title">
+    USELESS CALCULATOR
+  </div>
+
+  <div class="subtitle">
+    THE CALCULATOR THAT ABSOLUTELY DOES ITS JOB
+  </div>
+
+  <div class="status">
+
+    <div>
+      MEMORY: UNSTABLE
+    </div>
+
+    <div>
+      ACCURACY: 100%
+    </div>
+
+    <div>
+      USEFULNESS: 0%
+    </div>
+
+  </div>
+
+  <div class="display">
+
+    <div id="equation">
+      Ready to be unnecessarily complicated.
+    </div>
+
+    <div id="answer">
+      0
+    </div>
+
+  </div>
+
+  <div class="keypad">
+
+    <button
+      class="key ac"
+      onclick="pressAC()"
+    >
+      AC
+    </button>
+
+    <button
+      class="key"
+      onclick="pressBackspace()"
+    >
+      ⌫
+    </button>
+
+    <button
+      class="key mem"
+      onclick="memoryButton()"
+    >
+      MEM
+    </button>
+
+    <button
+      class="key operator"
+      onclick="pressOperator('/')"
+    >
+      ÷
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('7')"
+    >
+      7
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('8')"
+    >
+      8
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('9')"
+    >
+      9
+    </button>
+
+    <button
+      class="key operator"
+      onclick="pressOperator('*')"
+    >
+      ×
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('4')"
+    >
+      4
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('5')"
+    >
+      5
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('6')"
+    >
+      6
+    </button>
+
+    <button
+      class="key operator"
+      onclick="pressOperator('-')"
+    >
+      −
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('1')"
+    >
+      1
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('2')"
+    >
+      2
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('3')"
+    >
+      3
+    </button>
+
+    <button
+      class="key operator"
+      onclick="pressOperator('+')"
+    >
+      +
+    </button>
+
+    <button
+      class="key zero"
+      onclick="pressNumber('0')"
+    >
+      0
+    </button>
+
+    <button
+      class="key"
+      onclick="pressNumber('.')"
+    >
+      .
+    </button>
+
+    <button
+      class="key exit-key"
+      onclick="openExitScreen()"
+    >
+      EXIT
+    </button>
+
+    <button
+      class="key equal"
+      onclick="calculate()"
+    >
+      =
+    </button>
+
+  </div>
+
+  <div class="resize-area">
+
+    <button
+      id="resizeButton"
+      onclick="manualResize()"
+    >
+      ↘ RESIZE
+    </button>
+
+    <button
+      id="restoreButton"
+      onclick="restoreSize()"
+    >
+      ↗ RESTORE SIZE
+    </button>
+
+  </div>
+
+  <button
+    id="calculateButton"
+    onclick="triggerRickroll()"
+  >
+    CALCULATE
+  </button>
+
+  <div id="roast">
+    🤖 Please calculate something important.
+  </div>
+
+  <div id="resizeCounter">
+    ↘ RESIZE: 0 / 3
+  </div>
+
+</div>
+
+<!-- =======================================================
+     FLASHES
+======================================================= -->
+
+<div id="flash"></div>
+<div id="explosionFlash"></div>
+
+<!-- =======================================================
+     FIRST CAPTCHA
+======================================================= -->
+
+<div
+  class="overlay"
+  id="captchaOverlay"
+>
+
+  <div class="captcha-box">
+
+    <h2>
+      🤖 HUMAN VERIFICATION
+    </h2>
+
+    <div
+      class="captcha-stage"
+      id="captchaStage"
+    >
+      FIRST CAPTCHA — GENERAL KNOWLEDGE
+    </div>
+
+    <div
+      class="captcha-question"
+      id="captchaQuestion"
+    >
+      Loading...
+    </div>
+
+    <input
+      type="text"
+      id="captchaInput"
+      placeholder="Enter your answer"
+      autocomplete="off"
+    >
+
+    <button onclick="checkCaptcha()">
+      VERIFY HUMAN
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =======================================================
+     CAPTCHA FAILURE
+======================================================= -->
+
+<div
+  class="overlay"
+  id="failureScreen"
+  style="display:none;"
+>
+
+  <div class="failure-box">
+
+    <img
+      src="catimogi.jfif"
+      alt="Laughing cat"
+    >
+
+    <h2>
+      😂 WRONG
+    </h2>
+
+    <p id="failureMessage">
+      your brain might need a software update
+    </p>
+
+    <button id="tryAgain">
+      TRY AGAIN
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =======================================================
+     UNNECESSARY QUESTION
+======================================================= -->
+
+<div
+  class="overlay"
+  id="questionOverlay"
+  style="display:none;"
+>
+
+  <div class="question-box">
+
+    <h2>
+      🤨 Completely Unnecessary Question
+    </h2>
+
+    <p id="stupidQuestion">
+      Loading question...
+    </p>
+
+    <input
+      id="unnecessaryAnswerInput"
+      type="text"
+      placeholder="Answer literally anything"
+      autocomplete="off"
+    >
+
+    <button id="questionAnswer">
+      SUBMIT ANSWER
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =======================================================
+     RICKROLL
+======================================================= -->
+
+<div id="rickrollScreen">
+
+  <img
+    id="rickrollGif"
+    src="rickroll.gif"
+    alt="Rickroll"
+  >
+
+</div>
+
+<video
+  id="rickrollAudioVideo"
+  preload="auto"
+  playsinline
+  style="
+    position:fixed;
+    left:-99999px;
+    width:1px;
+    height:1px;
+  "
+>
+
+  <source
+    src="Voicy_rickroll.mp4"
+    type="video/mp4"
+  >
+
+</video>
+
+<!-- =======================================================
+     EXIT SCREEN
+======================================================= -->
+
+<div id="exitScreen">
+
+  <img
+    id="exitImage"
+    src="thankyouimage.jpg"
+    alt="Thank you"
+  >
+
+  <div class="exit-hint">
+    PRESS ESC TO RETURN
+  </div>
+
+</div>
+
+<audio
+  id="exitAudio"
+  preload="auto"
+>
+
+  <source
+    src="metal-slug-thank-you-tenkiu.mp3"
+    type="audio/mpeg"
+  >
+
+</audio>
+
+<!-- =======================================================
+     AUDIO
+======================================================= -->
+
+<audio id="catAudio">
+
+  <source
+    src="cat-laugh-meme-1.mp3"
+    type="audio/mpeg"
+  >
+
+</audio>
+
+<audio id="explosionAudio">
+
+  <source
+    src="loud-explosion.mp3"
+    type="audio/mpeg"
+  >
+
+</audio>
+
+<audio id="correctAnswerAudio">
+
+  <source
+    src="correct-answer.mp3"
+    type="audio/mpeg"
+  >
+
+</audio>
+
+<!-- =======================================================
+     RESTORE CALCULATOR
+======================================================= -->
+
+<div
+  class="restore-overlay"
+  id="restoreOverlay"
+>
+
+  <div class="restore-box">
+
+    <h2>
+      💥 CALCULATOR EXPLODED
+    </h2>
+
+    <p>
+      You pressed AC too many times.<br>
+      The calculator has officially had enough.
+    </p>
+
+    <button id="restoreCalculatorButton">
+      RESTORE CALCULATOR
+    </button>
+
+    <div id="restoreClickCounter">
+      CLICKS: 0 / 5
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentInput = "";
+let firstNumber = null;
+let currentOperator = null;
+
+let memoryValue = 0;
+
+let bufferedNumber = null;
+let numberClickCount = 0;
+
+let calculatorScale = 1;
+
+let resizeClicks = 0;
+
+let resizeTarget =
+  Math.floor(Math.random()*2)+3;
+
+const calculationShrink = 0.25;
+const resizeShrink = 0.20;
+const minimumScale = 0.15;
+
+let acClickCount = 0;
+let calculatorExploded = false;
+
+let restoreClicks = 0;
+
+let restoreTarget =
+  Math.floor(Math.random()*6)+5;
+
+let captchaAnswer = "";
+let firstCaptchaUsed = false;
+
+let pendingResult = null;
+let pendingExpression = "";
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const calculator =
+  document.getElementById("calculator");
+
+const equationDisplay =
+  document.getElementById("equation");
+
+const answerDisplay =
+  document.getElementById("answer");
+
+const roast =
+  document.getElementById("roast");
+
+const captchaOverlay =
+  document.getElementById("captchaOverlay");
+
+const captchaStage =
+  document.getElementById("captchaStage");
+
+const captchaQuestion =
+  document.getElementById("captchaQuestion");
+
+const captchaInput =
+  document.getElementById("captchaInput");
+
+const failureScreen =
+  document.getElementById("failureScreen");
+
+const failureMessage =
+  document.getElementById("failureMessage");
+
+const tryAgain =
+  document.getElementById("tryAgain");
+
+const catAudio =
+  document.getElementById("catAudio");
+
+const correctAnswerAudio =
+  document.getElementById("correctAnswerAudio");
+
+const questionOverlay =
+  document.getElementById("questionOverlay");
+
+const stupidQuestion =
+  document.getElementById("stupidQuestion");
+
+const unnecessaryAnswerInput =
+  document.getElementById("unnecessaryAnswerInput");
+
+const questionAnswer =
+  document.getElementById("questionAnswer");
+
+const resizeButton =
+  document.getElementById("resizeButton");
+
+const restoreButton =
+  document.getElementById("restoreButton");
+
+const resizeCounter =
+  document.getElementById("resizeCounter");
+
+const flash =
+  document.getElementById("flash");
+
+const rickrollScreen =
+  document.getElementById("rickrollScreen");
+
+const rickrollAudioVideo =
+  document.getElementById("rickrollAudioVideo");
+
+const explosionAudio =
+  document.getElementById("explosionAudio");
+
+const explosionFlash =
+  document.getElementById("explosionFlash");
+
+const restoreOverlay =
+  document.getElementById("restoreOverlay");
+
+const restoreCalculatorButton =
+  document.getElementById(
+    "restoreCalculatorButton"
+  );
+
+const restoreClickCounter =
+  document.getElementById(
+    "restoreClickCounter"
+  );
+
+const exitScreen =
+  document.getElementById("exitScreen");
+
+const exitAudio =
+  document.getElementById("exitAudio");
+
+/* =========================================================
+   CORRECT CAPTCHA SOUND
+========================================================= */
+
+function playCorrectCaptchaSound(){
+
+  correctAnswerAudio.pause();
+
+  correctAnswerAudio.currentTime = 0;
+
+  correctAnswerAudio
+    .play()
+    .catch(()=>{});
+}
+
+/* =========================================================
+   CAPTCHA QUESTIONS
+========================================================= */
+
+const generalKnowledgeQuestions = [
+
+  {
+    question:
+      "What is the capital of France?",
+    answers:["paris"]
+  },
+
+  {
+    question:
+      "Which planet is known as the Red Planet?",
+    answers:["mars"]
+  },
+
+  {
+    question:
+      "How many days are there in a week?",
+    answers:[
+      "7",
+      "seven"
+    ]
+  },
+
+  {
+    question:
+      "What is the largest ocean on Earth?",
+    answers:[
+      "pacific",
+      "pacific ocean"
+    ]
+  },
+
+  {
+    question:
+      "What is 2 + 2?",
+    answers:[
+      "4",
+      "four"
+    ]
+  },
+
+  {
+    question:
+      "Which animal is known as the king of the jungle?",
+    answers:[
+      "lion",
+      "a lion"
+    ]
+  },
+
+  {
+    question:
+      "What is the boiling point of water in Celsius?",
+    answers:[
+      "100",
+      "100 c",
+      "100°c",
+      "100 degrees"
+    ]
+  },
+
+  {
+    question:
+      "How many continents are there?",
+    answers:[
+      "7",
+      "seven"
+    ]
+  },
+
+  {
+    question:
+      "Which country is famous for the pyramids of Giza?",
+    answers:[
+      "egypt"
+    ]
+  },
+
+  {
+    question:
+      "What is the fastest land animal?",
+    answers:[
+      "cheetah",
+      "the cheetah"
+    ]
+  }
+
+];
+
+let firstKnowledgeQuestion = null;
+
+function generateFirstKnowledgeCaptcha(){
+
+  firstKnowledgeQuestion =
+    generalKnowledgeQuestions[
+      Math.floor(
+        Math.random() *
+        generalKnowledgeQuestions.length
+      )
+    ];
+
+  captchaStage.textContent =
+    "FIRST CAPTCHA — GENERAL KNOWLEDGE";
+
+  captchaQuestion.textContent =
+    firstKnowledgeQuestion.question;
+
+  captchaAnswer =
+    firstKnowledgeQuestion.answers;
+}
+
+function generateBasicCaptcha(){
+
+  const a =
+    Math.floor(Math.random()*10)+1;
+
+  const b =
+    Math.floor(Math.random()*10)+1;
+
+  captchaAnswer =
+    [String(a+b)];
+
+  captchaStage.textContent =
+    "BASIC CAPTCHA";
+
+  captchaQuestion.textContent =
+    `${a} + ${b} = ?`;
+}
+
+function generateCaptcha(){
+
+  if(firstCaptchaUsed){
+
+    generateBasicCaptcha();
+
+  }else{
+
+    generateFirstKnowledgeCaptcha();
+  }
+
+  captchaInput.value = "";
+}
+
+function normaliseAnswer(value){
+
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[?!.]/g,"")
+    .replace(/\s+/g," ");
+}
+
+function checkCaptcha(){
+
+  const userAnswer =
+    normaliseAnswer(
+      captchaInput.value
+    );
+
+  const correct =
+    captchaAnswer.some(
+      answer =>
+        normaliseAnswer(answer) ===
+        userAnswer
+    );
+
+  if(!firstCaptchaUsed){
+
+    firstCaptchaUsed = true;
+
+    if(!correct){
+
+      captchaOverlay.style.display =
+        "none";
+
+      failureMessage.textContent =
+        "your brain might need a software update";
+
+      failureScreen.style.display =
+        "flex";
+
+      catAudio.currentTime = 0;
+
+      catAudio.play().catch(()=>{});
+
+      return;
+    }
+
+    playCorrectCaptchaSound();
+
+    captchaOverlay.style.display =
+      "none";
+
+    calculator.classList.remove(
+      "locked"
+    );
+
+    roast.textContent =
+      "🤖 HUMAN VERIFIED. Unfortunately, this calculator is still useless.";
+
+    return;
+  }
+
+  if(!correct){
+
+    captchaOverlay.style.display =
+      "none";
+
+    failureMessage.textContent =
+      "your brain might need a software update";
+
+    failureScreen.style.display =
+      "flex";
+
+    catAudio.currentTime = 0;
+
+    catAudio.play().catch(()=>{});
+
+    return;
+  }
+
+  playCorrectCaptchaSound();
+
+  captchaOverlay.style.display =
+    "none";
+
+  calculator.classList.remove(
+    "locked"
+  );
+
+  roast.textContent =
+    "🤖 HUMAN VERIFIED. Unfortunately, this calculator is still useless.";
+}
+
+captchaInput.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+      checkCaptcha();
+    }
+
+  }
+);
+
+tryAgain.addEventListener(
+  "click",
+  ()=>{
+
+    catAudio.pause();
+    catAudio.currentTime = 0;
+
+    failureScreen.style.display =
+      "none";
+
+    captchaOverlay.style.display =
+      "flex";
+
+    generateCaptcha();
+  }
+);
+
+/* =========================================================
+   DISPLAY
+========================================================= */
+
+function updateDisplay(){
+
+  if(currentInput !== ""){
+
+    if(firstNumber !== null){
+
+      equationDisplay.textContent =
+        `${formatNumber(firstNumber)} ${formatOperator(currentOperator)}`;
+
+    }else{
+
+      equationDisplay.textContent =
+        "Input";
+    }
+
+    answerDisplay.textContent =
+      currentInput;
+
+    return;
+  }
+
+  if(firstNumber !== null){
+
+    equationDisplay.textContent =
+      `${formatNumber(firstNumber)} ${formatOperator(currentOperator)}`;
+
+    answerDisplay.textContent =
+      "0";
+
+    return;
+  }
+
+  equationDisplay.textContent =
+    "Ready to be unnecessarily complicated.";
+
+  answerDisplay.textContent =
+    "0";
+}
+
+function formatOperator(operator){
+
+  if(operator === "*") return "×";
+  if(operator === "/") return "÷";
+  if(operator === "-") return "−";
+  if(operator === "+") return "+";
+
+  return "";
+}
+
+function formatNumber(number){
+
+  if(typeof number !== "number"){
+    return String(number);
+  }
+
+  return Number.isInteger(number)
+    ? String(number)
+    : String(number);
+}
+
+/* =========================================================
+   NUMBER INPUT
+========================================================= */
+
+function pressNumber(value){
+
+  if(calculatorExploded) return;
+
+  if(bufferedNumber !== value){
+
+    bufferedNumber = value;
+    numberClickCount = 1;
+
+    roast.textContent =
+      "⌛ Processing number...";
+
+    return;
+  }
+
+  numberClickCount++;
+
+  if(numberClickCount === 2){
+
+    roast.textContent =
+      "⌛ Still processing... please wait...";
+
+    return;
+  }
+
+  if(numberClickCount < 3){
+    return;
+  }
+
+  numberClickCount = 0;
+  bufferedNumber = null;
+
+  if(value === "."){
+
+    if(currentInput.includes(".")){
+
+      roast.textContent =
+        "🤨 You already have a decimal point.";
+
+      return;
+    }
+
+    if(currentInput === ""){
+      currentInput = "0";
+    }
+  }
+
+  if(
+    value !== "." &&
+    Math.random() < 0.50
+  ){
+
+    roast.textContent =
+      `🧠 MEMORY HOLE: ${value} disappeared AFTER THREE CLICKS. 😭`;
+
+    return;
+  }
+
+  currentInput += value;
+
+  if(
+    currentInput.length > 1 &&
+    currentInput.startsWith("0") &&
+    !currentInput.startsWith("0.")
+  ){
+
+    currentInput =
+      currentInput.replace(/^0+/,"");
+
+    if(currentInput === ""){
+      currentInput = "0";
+    }
+  }
+
+  updateDisplay();
+
+  if(
+    currentInput.length > 2 &&
+    Math.random() < 0.15
+  ){
+
+    const chars =
+      currentInput.split("");
+
+    const digitIndexes = [];
+
+    for(
+      let i=0;
+      i<chars.length;
+      i++
+    ){
+
+      if(/[0-9]/.test(chars[i])){
+        digitIndexes.push(i);
+      }
+    }
+
+    if(digitIndexes.length > 1){
+
+      const removeIndex =
+        digitIndexes[
+          Math.floor(
+            Math.random() *
+            digitIndexes.length
+          )
+        ];
+
+      chars.splice(
+        removeIndex,
+        1
+      );
+
+      currentInput =
+        chars.join("");
+
+      roast.textContent =
+        "🧠 OOPS. I forgot one of your digits.";
+
+      updateDisplay();
+    }
+  }
+}
+
+/* =========================================================
+   OPERATORS
+========================================================= */
+
+function pressOperator(operator){
+
+  if(calculatorExploded) return;
+
+  if(
+    currentInput === "" &&
+    firstNumber === null
+  ){
+
+    roast.textContent =
+      "🤨 Enter a number first.";
+
+    return;
+  }
+
+  if(
+    firstNumber !== null &&
+    currentInput !== "" &&
+    currentOperator !== null
+  ){
+
+    const intermediate =
+      performOperation(
+        firstNumber,
+        Number(currentInput),
+        currentOperator
+      );
+
+    if(typeof intermediate === "string"){
+
+      showResultImmediately(
+        intermediate
+      );
+
+      return;
+    }
+
+    firstNumber =
+      intermediate;
+
+    currentInput = "";
+  }
+
+  if(firstNumber === null){
+
+    firstNumber =
+      Number(currentInput);
+
+    currentInput = "";
+  }
+
+  currentOperator =
+    operator;
+
+  bufferedNumber = null;
+  numberClickCount = 0;
+
+  equationDisplay.textContent =
+    `${formatNumber(firstNumber)} ${formatOperator(currentOperator)}`;
+
+  answerDisplay.textContent =
+    "0";
+
+  roast.textContent =
+    `⚙️ Operation selected: ${formatOperator(operator)}`;
+}
+
+/* =========================================================
+   OPERATION ENGINE
+========================================================= */
+
+function performOperation(
+  a,
+  b,
+  operator
+){
+
+  switch(operator){
+
+    case "+":
+      return a+b;
+
+    case "-":
+      return a-b;
+
+    case "*":
+      return a*b;
+
+    case "/":
+
+      if(b === 0){
+        return "DIVISION BY ZERO";
+      }
+
+      return a/b;
+
+    default:
+      return b;
+  }
+}
+
+/* =========================================================
+   EQUALS
+========================================================= */
+
+function calculate(){
+
+  if(calculatorExploded) return;
+
+  if(
+    firstNumber === null ||
+    currentOperator === null
+  ){
+
+    roast.textContent =
+      "🤨 There isn't an operation yet.";
+
+    return;
+  }
+
+  if(currentInput === ""){
+
+    roast.textContent =
+      "🤨 Give me a second number.";
+
+    return;
+  }
+
+  const secondNumber =
+    Number(currentInput);
+
+  const result =
+    performOperation(
+      firstNumber,
+      secondNumber,
+      currentOperator
+    );
+
+  const expression =
+    `${formatNumber(firstNumber)} ` +
+    `${formatOperator(currentOperator)} ` +
+    `${formatNumber(secondNumber)}`;
+
+  firstNumber = null;
+  currentOperator = null;
+  currentInput = "";
+
+  bufferedNumber = null;
+  numberClickCount = 0;
+
+  calculatorScale -=
+    calculationShrink;
+
+  if(
+    calculatorScale <
+    minimumScale
+  ){
+
+    calculatorScale =
+      minimumScale;
+  }
+
+  applyScale();
+
+  showUnnecessaryQuestion(
+    expression,
+    result
+  );
+}
+
+/* =========================================================
+   IMMEDIATE RESULT
+========================================================= */
+
+function showResultImmediately(result){
+
+  currentInput = "";
+  firstNumber = null;
+  currentOperator = null;
+
+  equationDisplay.textContent =
+    "Result";
+
+  answerDisplay.textContent =
+    result;
+
+  roast.textContent =
+    "⚠️ Operation stopped because something went wrong.";
+}
+
+/* =========================================================
+   UNNECESSARY QUESTIONS
+========================================================= */
+
+const uselessQuestions = [
+
+  "Would you rather fight 100 calculator-sized ducks or 1 duck-sized calculator?",
+
+  "Do you think calculators have feelings?",
+
+  "Why did you even need a calculator for this?",
+
+  "What is your favorite color? This is extremely important.",
+
+  "Pineapple on pizza: yes or no?",
+
+  "Would a calculator make a good pet?",
+
+  "Do you trust this calculator?",
+
+  "What came first: the calculator or the math?",
+
+  "Rate your calculator skills from 1 to suspicious.",
+
+  "Should calculators be allowed to have opinions?",
+
+  "Would you let a calculator babysit your children?",
+
+  "How many spoons do you own?",
+
+  "Is math actually worth it?",
+
+  "What is your biggest fear: math or this calculator?",
+
+  "Do you think numbers secretly hate us?"
+
+];
+
+function showUnnecessaryQuestion(
+  expression,
+  result
+){
+
+  pendingExpression =
+    expression;
+
+  pendingResult =
+    result;
+
+  const question =
+    uselessQuestions[
+      Math.floor(
+        Math.random() *
+        uselessQuestions.length
+      )
+    ];
+
+  stupidQuestion.textContent =
+    question;
+
+  unnecessaryAnswerInput.value =
+    "";
+
+  questionOverlay.style.display =
+    "flex";
+
+  setTimeout(
+    ()=>{
+      unnecessaryAnswerInput.focus();
+    },
+    80
+  );
+}
+
+questionAnswer.addEventListener(
+  "click",
+  ()=>{
+
+    questionOverlay.style.display =
+      "none";
+
+    equationDisplay.textContent =
+      pendingExpression;
+
+    answerDisplay.textContent =
+      pendingResult;
+
+    roast.textContent =
+      "✅ Fine. Here is the actual answer.";
+  }
+);
+
+unnecessaryAnswerInput.addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+      questionAnswer.click();
+    }
+
+  }
+);
+
+/* =========================================================
+   EXIT SCREEN
+========================================================= */
+
+function openExitScreen(){
+
+  if(calculatorExploded) return;
+
+  calculator.style.visibility =
+    "hidden";
+
+  exitScreen.style.display =
+    "flex";
+
+  exitAudio.pause();
+
+  exitAudio.currentTime = 0;
+
+  exitAudio
+    .play()
+    .catch(()=>{});
+}
+
+function closeExitScreen(){
+
+  exitAudio.pause();
+
+  exitAudio.currentTime = 0;
+
+  exitScreen.style.display =
+    "none";
+
+  calculator.style.visibility =
+    "visible";
+}
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key === "Escape" &&
+      exitScreen.style.display === "flex"
+    ){
+
+      closeExitScreen();
+
+    }
+
+  }
+);
+
+/* =========================================================
+   BACKSPACE
+========================================================= */
+
+function pressBackspace(){
+
+  if(calculatorExploded) return;
+
+  bufferedNumber = null;
+  numberClickCount = 0;
+
+  if(currentInput !== ""){
+
+    currentInput =
+      currentInput.slice(0,-1);
+
+    updateDisplay();
+
+    return;
+  }
+
+  roast.textContent =
+    "⌫ There is nothing to delete.";
+}
+
+/* =========================================================
+   MEMORY
+========================================================= */
+
+function memoryButton(){
+
+  if(calculatorExploded) return;
+
+  if(currentInput !== ""){
+
+    memoryValue =
+      Number(currentInput);
+
+    roast.textContent =
+      "🧠 Memory saved. Probably.";
+
+    return;
+  }
+
+  if(memoryValue !== 0){
+
+    currentInput =
+      String(memoryValue);
+
+    updateDisplay();
+
+    roast.textContent =
+      "🧠 Memory restored.";
+
+  }else{
+
+    roast.textContent =
+      "🧠 Memory is empty. It forgot itself.";
+  }
+}
+
+/* =========================================================
+   AC
+========================================================= */
+
+function pressAC(){
+
+  if(calculatorExploded) return;
+
+  acClickCount++;
+
+  if(acClickCount < 6){
+
+    currentInput = "";
+    firstNumber = null;
+    currentOperator = null;
+
+    bufferedNumber = null;
+    numberClickCount = 0;
+
+    equationDisplay.textContent =
+      "AC cleared everything.";
+
+    answerDisplay.textContent =
+      "0";
+
+    roast.textContent =
+      `🧹 AC pressed ${acClickCount}/6 times.`;
+
+    return;
+  }
+
+  triggerCalculatorExplosion();
+}
+
+/* =========================================================
+   EXPLOSION
+========================================================= */
+
+function triggerCalculatorExplosion(){
+
+  if(calculatorExploded) return;
+
+  calculatorExploded = true;
+
+  restoreTarget =
+    Math.floor(Math.random()*6)+5;
+
+  restoreClicks = 0;
+
+  calculator.classList.add(
+    "exploded"
+  );
+
+  explosionAudio.pause();
+
+  explosionAudio.currentTime = 0;
+
+  explosionAudio
+    .play()
+    .catch(()=>{});
+
+  explosionFlash.classList.remove(
+    "active"
+  );
+
+  void explosionFlash.offsetWidth;
+
+  explosionFlash.classList.add(
+    "active"
+  );
+
+  createExplosionParticles();
+
+  setTimeout(
+    ()=>{
+
+      restoreOverlay.style.display =
+        "flex";
+
+      updateRestoreCounter();
+
+    },
+    900
+  );
+}
+
+/* =========================================================
+   EXPLOSION PARTICLES
+========================================================= */
+
+function createExplosionParticles(){
+
+  const values = [
+
+    "0","1","2","3","4",
+    "5","6","7","8","9",
+    "+","−","×","÷",
+    "=","AC","⌫","MEM",
+    "EXIT","CALCULATE",
+    "100","404","∞",
+    "😭","💥","🧠"
+
+  ];
+
+  for(let i=0;i<60;i++){
+
+    const particle =
+      document.createElement("div");
+
+    particle.className =
+      "explosion-number";
+
+    particle.textContent =
+      values[
+        Math.floor(
+          Math.random() *
+          values.length
+        )
+      ];
+
+    particle.style.left =
+      (
+        window.innerWidth/2 +
+        Math.random()*220 -
+        110
+      ) + "px";
+
+    particle.style.top =
+      (
+        window.innerHeight/2 +
+        Math.random()*280 -
+        140
+      ) + "px";
+
+    particle.style.setProperty(
+      "--x",
+      (Math.random()*1000-500)+"px"
+    );
+
+    particle.style.setProperty(
+      "--y",
+      (Math.random()*900-450)+"px"
+    );
+
+    particle.style.setProperty(
+      "--r",
+      (Math.random()*1000-500)+"deg"
+    );
+
+    document.body.appendChild(
+      particle
+    );
+
+    setTimeout(
+      ()=>{
+        particle.remove();
+      },
+      1400
+    );
+  }
+
+  const pieces = [
+    "▰",
+    "▣",
+    "■",
+    "●",
+    "◆",
+    "=",
+    "+",
+    "−"
+  ];
+
+  for(let i=0;i<30;i++){
+
+    const piece =
+      document.createElement("div");
+
+    piece.className =
+      "explosion-piece";
+
+    piece.textContent =
+      pieces[
+        Math.floor(
+          Math.random() *
+          pieces.length
+        )
+      ];
+
+    piece.style.left =
+      window.innerWidth/2 + "px";
+
+    piece.style.top =
+      window.innerHeight/2 + "px";
+
+    piece.style.fontSize =
+      (15 + Math.random()*35) +
+      "px";
+
+    piece.style.setProperty(
+      "--x",
+      (Math.random()*1100-550)+"px"
+    );
+
+    piece.style.setProperty(
+      "--y",
+      (Math.random()*1000-500)+"px"
+    );
+
+    piece.style.setProperty(
+      "--r",
+      (Math.random()*1200-600)+"deg"
+    );
+
+    document.body.appendChild(
+      piece
+    );
+
+    setTimeout(
+      ()=>{
+        piece.remove();
+      },
+      1400
+    );
+  }
+}
+
+/* =========================================================
+   RESTORE CALCULATOR
+========================================================= */
+
+function updateRestoreCounter(){
+
+  restoreClickCounter.textContent =
+    `CLICKS: ${restoreClicks} / ${restoreTarget}`;
+}
+
+restoreCalculatorButton.addEventListener(
+  "click",
+  ()=>{
+
+    if(!calculatorExploded) return;
+
+    restoreClicks++;
+
+    updateRestoreCounter();
+
+    if(
+      restoreClicks <
+      restoreTarget
+    ){
+
+      roast.textContent =
+        `🔧 Restoration processing... ${restoreClicks}/${restoreTarget}`;
+
+      return;
+    }
+
+    calculatorExploded = false;
+
+    restoreOverlay.style.display =
+      "none";
+
+    calculator.classList.remove(
+      "exploded"
+    );
+
+    currentInput = "";
+    firstNumber = null;
+    currentOperator = null;
+
+    bufferedNumber = null;
+    numberClickCount = 0;
+
+    acClickCount = 0;
+
+    calculatorScale = 1;
+
+    applyScale();
+
+    resizeClicks = 0;
+
+    resizeTarget =
+      Math.floor(Math.random()*2)+3;
+
+    resizeButton.style.display =
+      "block";
+
+    restoreButton.style.display =
+      "none";
+
+    resizeCounter.textContent =
+      `↘ RESIZE: 0 / ${resizeTarget}`;
+
+    updateDisplay();
+
+    roast.textContent =
+      "🔧 CALCULATOR RESTORED. DON'T PRESS AC SIX TIMES.";
+
+    restoreClicks = 0;
+
+    restoreTarget =
+      Math.floor(Math.random()*6)+5;
+
+    updateRestoreCounter();
+  }
+);
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function applyScale(){
+
+  calculator.style.transform =
+    `scale(${calculatorScale})`;
+}
+
+function manualResize(){
+
+  if(calculatorExploded) return;
+
+  resizeClicks++;
+
+  calculatorScale -=
+    resizeShrink;
+
+  if(
+    calculatorScale <
+    minimumScale
+  ){
+
+    calculatorScale =
+      minimumScale;
+  }
+
+  applyScale();
+
+  resizeCounter.textContent =
+    `↘ RESIZE: ${resizeClicks} / ${resizeTarget}`;
+
+  roast.textContent =
+    "↘ RESIZE clicked. MUCH smaller.";
+
+  if(
+    resizeClicks >=
+    resizeTarget
+  ){
+
+    resizeButton.style.display =
+      "none";
+
+    restoreButton.style.display =
+      "block";
+
+    resizeCounter.textContent =
+      "↗ RESIZE LIMIT REACHED";
+  }
+}
+
+function restoreSize(){
+
+  if(calculatorExploded) return;
+
+  calculatorScale = 1;
+
+  applyScale();
+
+  resizeClicks = 0;
+
+  resizeTarget =
+    Math.floor(Math.random()*2)+3;
+
+  resizeButton.style.display =
+    "block";
+
+  restoreButton.style.display =
+    "none";
+
+  resizeCounter.textContent =
+    `↘ RESIZE: 0 / ${resizeTarget}`;
+
+  roast.textContent =
+    "↗ Calculator restored to full size.";
+}
+
+/* =========================================================
+   RICKROLL
+========================================================= */
+
+function triggerRickroll(){
+
+  if(calculatorExploded) return;
+
+  flash.style.display =
+    "block";
+
+  setTimeout(
+    ()=>{
+
+      flash.style.display =
+        "none";
+
+      rickrollScreen.style.display =
+        "flex";
+
+      rickrollAudioVideo.pause();
+
+      rickrollAudioVideo.currentTime =
+        0;
+
+      rickrollAudioVideo
+        .play()
+        .catch(()=>{});
+
+    },
+    350
+  );
+}
+
+/* =========================================================
+   ESCAPE CLOSES RICKROLL
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event => {
+
+    if(
+      event.key === "Escape" &&
+      rickrollScreen.style.display ===
+        "flex"
+    ){
+
+      rickrollAudioVideo.pause();
+
+      rickrollAudioVideo.currentTime =
+        0;
+
+      rickrollScreen.style.display =
+        "none";
+    }
+
+  }
+);
+
+/* =========================================================
+   START
+========================================================= */
+
+generateCaptcha();
+
+updateDisplay();
+
+applyScale();
+
+updateRestoreCounter();
+
+</script>
+
+</body>
+</html>
